@@ -114,7 +114,6 @@ public class ConfigManager {
         return map;
     }
 
-    // --- NUEVO: Gestión de Command Spy ---
     public void saveCmdSpy(Map<UUID, String> cmdSpyMap) {
         File file = new File(dataDirectory.toFile(), "cmdspy_data.txt");
         try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {

@@ -1,35 +1,39 @@
 package com.pumpkin.msg.commands;
 
-import com.pumpkin.msg.PumpkinMsg;
-import com.velocitypowered.api.command.SimpleCommand;
-import com.velocitypowered.api.proxy.Player;
+import com.pumpkin.msg.core.CrossCommand;
+import com.pumpkin.msg.core.CrossPlayer;
+import com.pumpkin.msg.core.PumpkinCore;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
+import java.util.List;
 import java.util.UUID;
 
-public class ToggleMsgCommand implements SimpleCommand {
+public class ToggleMsgCommand implements CrossCommand {
 
-    private final PumpkinMsg plugin;
+    private final PumpkinCore core;
     private final MiniMessage mm = MiniMessage.miniMessage();
 
-    public ToggleMsgCommand(PumpkinMsg plugin) {
-        this.plugin = plugin;
+    public ToggleMsgCommand(PumpkinCore core) {
+        this.core = core;
     }
 
     @Override
-    public void execute(Invocation invocation) {
-        if (!(invocation.source() instanceof Player player)) return;
-
+    public void execute(CrossPlayer player, String[] args) {
         UUID uuid = player.getUniqueId();
-        if (plugin.getMsgDisabledUsers().contains(uuid)) {
-            plugin.getMsgDisabledUsers().remove(uuid);
-            player.sendMessage(mm.deserialize(plugin.getConfig().getString("messages.toggle-on")));
+
+        if (core.getMsgDisabledUsers().contains(uuid)) {
+            core.getMsgDisabledUsers().remove(uuid);
+            player.sendMessage(mm.deserialize(core.getConfig().getString("messages.toggle-on")));
         } else {
-            plugin.getMsgDisabledUsers().add(uuid);
-            player.sendMessage(mm.deserialize(plugin.getConfig().getString("messages.toggle-off")));
+            core.getMsgDisabledUsers().add(uuid);
+            player.sendMessage(mm.deserialize(core.getConfig().getString("messages.toggle-off")));
         }
 
-        // Guardar persistencia
-        plugin.getConfig().saveUUIDSet(plugin.getMsgDisabledUsers(), "toggled_msgs.txt");
+        core.saveData();
+    }
+
+    @Override
+    public List<String> suggest(CrossPlayer player, String[] args) {
+        return List.of();
     }
 }
